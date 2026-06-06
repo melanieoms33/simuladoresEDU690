@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Campamento de Arte: Aprende, conecta y crece</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg: #0f1020;
+      --card: #171a2b;
+      --text: #e6e6f2;
+      --muted: #b8b8d9;
+      --accent: #79e3ff;
+      --accent2: #ffd166;
+      --ok: #4cd964;
+      --warn: #ff8a00;
+      --vg: #7bd389;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--text);
+      background: radial-gradient( circle at 20% -10%, rgba(125, 216, 255, 0.25), transparent 40% ),
+                  radial-gradient( circle at 100% 0%, rgba(255, 209, 102, 0.25), transparent 40% ),
+                  linear-gradient(135deg, #0b0e1a 0%, #1a1730 60%, #14192a 100%);
+      background-attachment: fixed;
+    }
+    header{
+      padding:14px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      position: sticky;
+      top: 0;
+      background: rgba(15,16,30,0.92);
+      backdrop-filter: saturate(1.2) blur(2px);
+      z-index: 5;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .brand .logo{
+      width:42px; height:42px; border-radius:12px;
+      background: conic-gradient(from 180deg at 50% 50%, #f44336, #ffeb3b, #4caf50, #2196f3, #e91e63, #f44336);
+      box-shadow: 0 6px 14px rgba(0,0,0,.3);
+    }
+    .brand h1{ font-size:1.05rem; margin:0; letter-spacing:.5px}
+    nav{ display:flex; gap:8px; flex-wrap:wrap}
+    nav button{
+      background:#2a2f4a; color:white; border:0; padding:12px 14px; border-radius:10px;
+      cursor:pointer; font-weight:600;
+      transition: transform .15s ease, background .25s;
+    }
+    nav button.active{ background:#5a6bff; }
+    main{ padding:18px; display:flex; gap:14px; flex-wrap:wrap; }
+    .panel{ background: rgba(20,22,40,.92); border-radius:16px; padding:16px; box-shadow: 0 6px 18px rgba(0,0,0,.25); flex:1 1 320px; min-width: 280px; }
+    .panel h2{ margin:0 0 8px 0; font-size:1.15rem; }
+    .panel p{ margin:.25rem 0 0; color:var(--muted); font-size:.95rem; }
+    .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:14px; width:100%}
+    .card{ padding:12px; border-radius:12px; background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08)}
+    .card .title{ font-weight:700; margin-bottom:6px}
+    .card .excerpt{ color:var(--muted); font-size:.92rem}
+    .visual{ position:relative; height:240px; border-radius:12px; overflow:hidden; background: #111; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.08) }
+    .canvas{ width:100%; height:100%; display:block }
+    .toolbar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:8px; border-radius:12px; margin-bottom:8px;
+               background: rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.08) }
+    .toolbar label{ font-size:.88rem; color:#e9e9ff; margin-right:6px}
+    .btn{ background:#2e2f4a; color:white; border:0; padding:10px 12px; font-weight:700; border-radius:9px; cursor:pointer; }
+    .btn.secondary{ background:#33365a }
+    .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,.25) }
+    input[type="range"]{ width:140px }
+    .section{ margin-bottom:14px; }
+    .tag{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background: rgba(125, 206, 255, .25); color:#e0f5ff; font-weight:600; font-size:.8rem}
+    .badge{ padding:6px 10px; border-radius:999px; background:#2b2f4a; color:#dbe4ff; font-weight:700; font-size:.75rem}
+    .footer{ text-align:center; padding:24px; color: var(--muted); font-size:.85rem}
+    @media (max-width: 800px){
+      .quick{ display:none }
+    }
+    /* Estilo visual de imágenes simuladas de artistas (elemental) */
+    .artist-block{ display:flex; gap:8px; align-items:flex-start; padding:8px; border-radius:8px; background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); }
+    .artist-figure{ width:120px; height:120px; border-radius:10px; overflow:hidden; background:#222; display:grid; place-items:center; }
+    .artist-figure canvas{ width:100%; height:100%; display:block }
+    .artist-caption{ font-size:.85rem; color:#e8e8ff }
+    @media (max-width: 600px){
+      .artist-block{ flex-direction:column; align-items:stretch; }
+      .artist-figure{ width:100%; height:180px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-label="logo"></div>
+      <div>
+        <h1>Campamento de Arte: Aprende, conecta y crece</h1>
+        <div class="tag" aria-label="lema">Lema: Aprende, conecta y crece</div>
+      </div>
+    </div>
+    <nav aria-label="Navegación principal">
+      <button class="active" data-section="bienvenida">Bienvenida</button>
+      <button data-section="explora-color">Explora el Color</button>
+      <button data-section="estilos-artistas">Estilos de Artistas</button>
+      <button data-section="autorretato">Autorretrato</button>
+      <button data-section="reto">Mini Reto</button>
+    </nav>
+  </header>
+
+  <main id="contenedor">
+    <!-- Bienvenida -->
+    <section class="panel" id="bienvenida" aria-labelledby="titulo-bienvenida">
+      <h2 id="titulo-bienvenida">Bienvenida al campamento de arte</h2>
+      <p>Bienvenido/a a un museo-interactivo donde aprenderás haciendo. Mezcla colores, prueba estilos y crea tu autorretrato. Todo en un solo archivo, sin instalaciones ni internet.</p>
+      <div class="grid" style="margin-top:8px">
+        <div class="card">
+          <div class="title">Aprende jugando</div>
+          <div class="excerpt">Cada sección te da cápsulas breves y claras para entender el arte.</div>
+        </div>
+        <div class="card">
+          <div class="title">Explora y crea</div>
+          <div class="excerpt">Observa ejemplos inspirados en Van Gogh, Frida Kahlo y Picasso.</div>
+        </div>
+        <div class="card">
+          <div class="title">Experiencia guiada</div>
+          <div class="excerpt">Recibe retroalimentación inmediata y verás tu progreso al experimentar.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explora el Color -->
+    <section class="panel" id="explora-color" aria-labelledby="titulo-color">
+      <h2 id="titulo-color">Explora el color: teoría y mezcla</h2>
+      <p>La teoría del color ayuda a expresar emociones. Mezcla colores y observa el resultado al instante. Es como magia de pinturas.</p>
+
+      <div class="toolbar" role="group" aria-label="herramientas de color">
+        <span class="badge">Paleta</span>
+        <button class="btn" id="paleta-primario" data-palette="primario">Primario</button>
+        <button class="btn" id="paleta-arte" data-palette="arte">Artes</button>
+        <button class="btn" id="paleta-aleatoria" data-palette="aleatoria">Aleatoria</button>
+
+        <span class="badge" style="margin-left: auto">Tamaño de pincel</span>
+        <input type="range" id="brush" min="1" max="60" value="20" />
+      </div>
+
+      <div class="visual" id="canvas-color" aria-label="zona de mezcla de color">
+        <canvas id="colorCanvas" class="canvas" width="600" height="360"></canvas>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+        <button class="btn" id="limpiar-colores">Limpiar</button>
+        <button class="btn secondary" id="guardar-colores">Guardar paleta</button>
+        <span class="tag" id="color-info" aria-live="polite">Selecciona colores para mezclar.</span>
+      </div>
+
+      <!-- Sección educativa de imágenes de ejemplos (elemental) -->
+      <div class="section" aria-label="ejemplos de estilo">
+        <div class="artist-block" style="margin-top:10px;">
+          <div class="artist-figure" aria-label="ejemplo Van Gogh simple">
+            <canvas id="vangogh-canvas" width="120" height="120"></canvas>
+          </div>
+          <div>
+            <div class="artist-caption"><strong>Van Gogh (Girasoles)</strong></div>
+            <div class="artist-caption">Pinceladas recordadas y colores cálidos. Expresiones para emociones fuertes.</div>
+          </div>
+        </div>
+        <div class="artist-block" style="margin-top:8px;">
+          <div class="artist-figure" aria-label="ejemplo Frida Kahlo simple">
+            <canvas id="frida-canvas" width="120" height="120"></canvas>
+          </div>
+          <div>
+            <div class="artist-caption"><strong>Frida Kahlo</strong></div>
+            <div class="artist-caption">Autorretrato y símbolos personales. Colores vivos, emociones claras.</div>
+          </div>
+        </div>
+        <div class="artist-block" style="margin-top:8px;">
+          <div class="artist-figure" aria-label="ejemplo Picasso simple">
+            <canvas id="picasso-canvas" width="120" height="120"></canvas>
+          </div>
+          <div>
+            <div class="artist-caption"><strong>Pablo Picasso</strong></div>
+            <div class="artist-caption">Cubismo: formas separadas y colores contrastados.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Estilos de Artistas -->
+    <section class="panel" id="estilos-artistas" aria-labelledby="titulo-estilos">
+      <h2 id="titulo-estilos">Descubre estilos de artistas</h2>
+      <p>Explora ejemplos visuales simples de Van Gogh, Frida Kahlo y Picasso. Observa rasgos y prueba un estilo guiado.</p>
+
+      <div class="grid" id="galeria-estilos" aria-label="galería de estilos">
+        <!-- tarjetas de estilos generadas por JS (con imágenes generadas en canvas) -->
+      </div>
+    </section>
+
+    <!-- Autorretrato -->
+    <section class="panel" id="autorretato" aria-labelledby="titulo-autorretrato">
+      <h2 id="titulo-autorretrato">Crea tu autorretrato</h2>
+      <p>Un autorretrato sencillo con herramientas básicas. Elige colores de piel, cabello y fondo, y añade rasgos de expresión.</p>
+
+      <div class="visual" style="height:260px; margin-bottom:8px; background: #111;">
+        <canvas id="autoCanvas" width="560" height="260" class="canvas" aria-label="autorretrato guiado"></canvas>
+      </div>
+
+      <div class="toolbar" role="group" aria-label="herramientas de autorretrato">
+        <span class="badge">Pincel</span>
+        <input type="range" id="autoBrush" min="2" max="40" value="8" />
+        <span class="badge" style="margin-left: auto">Color piel</span>
+        <input type="color" id="skinColor" value="#f5d2b7" style="width:56px;height:34px;border:none;border-radius:6px;background:#fff;cursor:pointer" />
+        <span class="badge" style="margin-left:8px">Cabello</span>
+        <input type="color" id="hairColor" value="#2d1b0b" style="width:56px;height:34px;border:none;border-radius:6px;background:#fff;cursor:pointer" />
+        <button class="btn" id="borrar-autorretrato">Borrar lienzo</button>
+      </div>
+    </section>
+
+    <!-- Mini Reto Final -->
+    <section class="panel" id="reto" aria-labelledby="titulo-reto">
+      <h2 id="titulo-reto">Mini reto final: combinación y creación</h2>
+      <p>Une lo aprendido: crea una escena inspirada en uno o varios estilos y comparte una breve explicación en una frase positiva.</p>
+
+      <div class="grid" id="reto-grid" aria-label="reto interactivo">
+        <div class="card">
+          <div class="title">Desafío 1: Paleta de emociones</div>
+          <div class="excerpt">Usa una paleta para expresar una emoción (alegría, calma, energía).</div>
+          <button class="btn" data-action="start-reto" data-type="palette-emotion">Probar</button>
+        </div>
+        <div class="card">
+          <div class="title">Desafío 2: Estilo mixto</div>
+          <div class="excerpt">Crea una mini escena combinando dos estilos.</div>
+          <button class="btn" data-action="start-reto" data-type="mix-styles">Probar</button>
+        </div>
+        <div class="card">
+          <div class="title">Desafío 3: Retrato + fondo</div>
+          <div class="excerpt">Autorretrato con fondo creativo inspirado en Kahlo o Van Gogh.</div>
+          <button class="btn" data-action="start-reto" data-type="portrait-background">Probar</button>
+        </div>
+      </div>
+
+      <div id="reto-feedback" style="margin-top:10px; min-height:40px; color:#d8f5ff"></div>
+    </section>
+  </main>
+
+  <div class="footer">
+    © Campamento de Arte Educativo • Lema: Aprende, conecta y crece • Sin instalaciones ni internet
+  </div>
+
+  <script>
+    // Navegación entre secciones
+    const sections = {
+      bienvenida: document.getElementById('bienvenida'),
+      color: document.getElementById('explora-color'),
+      estilos: document.getElementById('estilos-artistas'),
+      autor: document.getElementById('autorretato'),
+      reto: document.getElementById('reto')
+    };
+    const navButtons = [...document.querySelectorAll('nav button')];
+
+    function showSection(id){
+      for (const s of Object.values(sections)) s.style.display = 'none';
+      sections[id].style.display = 'block';
+      navButtons.forEach(b => b.classList.toggle('active', b.dataset.section === id));
+    }
+    Object.values(sections).forEach((el,i)=> el.style.display = i===0?'block':'none');
+    document.querySelectorAll('nav button').forEach(btn=>{
+      btn.addEventListener('click', ()=> showSection(btn.dataset.section));
+    });
+
+    // 1) Explora Color: lienzo de mezcla
+    const cCanvas = document.getElementById('colorCanvas');
+    const cCtx = cCanvas.getContext('2d');
+    let baseColor = '#ff5e5e';
+    let color2 = '#5e7dff';
+    const brushInput = document.getElementById('brush');
+    function drawColorDemo(){
+      const w = cCanvas.width, h = cCanvas.height;
+      const g = cCtx.createLinearGradient(0,0,w,h);
+      g.addColorStop(0, baseColor);
+      g.addColorStop(1, color2);
+      cCtx.fillStyle = g;
+      cCtx.fillRect(0,0,w,h);
+      for(let i=0;i<55;i++){
+        const r = Math.max(6, brushInput.value/2 + Math.random()*30);
+        const x = Math.random()*w;
+        const y = Math.random()*h;
+        cCtx.globalAlpha = 0.25;
+        cCtx.fillStyle = i%2? '#fff':'#000';
+        cCtx.beginPath(); cCtx.arc(x,y,r,0,Math.PI*2); cCtx.fill();
+      }
+      cCtx.globalAlpha = 1;
+    }
+    drawColorDemo();
+
+    function mixColors(event){
+      const rect = cCanvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const t = Math.min(1, Math.max(0, x / rect.width));
+      const rgb1 = hexToRgb(baseColor);
+      const rgb2 = hexToRgb(color2);
+      const rgb = {
+        r: Math.round(rgb1.r + (rgb2.r - rgb1.r) * t),
+        g: Math.round(rgb1.g + (rgb2.g - rgb1.g) * t),
+        b: Math.round(rgb1.b + (rgb2.b - rgb1.b) * t)
+      };
+      cCtx.fillStyle = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+      const r = parseInt(brushInput.value);
+      cCtx.beginPath();
+      cCtx.arc(x, y, r, 0, Math.PI*2);
+      cCtx.fill();
+      document.getElementById('color-info').textContent = `Mezcla: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    }
+    cCanvas.addEventListener('click', mixColors);
+
+    const palettes = {
+      primario: ['#e53935','#2196f3','#ffeb3b'],
+      arte: ['#ff6f61','#6b5b95','#88b04b'],
+      aleatoria: []
+    };
+    function hexToRgb(hex){
+      const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+      return m ? {r: parseInt(m<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[1]</a>,16), g: parseInt(m<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[2]</a>,16), b: parseInt(m<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[3]</a>,16)} : {r:0,g:0,b:0};
+    }
+    function setPalette(hexes){
+      if(!hexes.length) return;
+      baseColor = hexes<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[0]</a>;
+      color2 = hexes<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[1]</a> || hexes<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[0]</a>;
+      drawColorDemo();
+      document.getElementById('color-info').textContent = `Paleta aplicada: ${hexes.join(' ')}. Observa la mezcla.`;
+    }
+    document.querySelectorAll('#explora-color [data-palette]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const key = btn.dataset.palette;
+        if(key==='aleatoria'){
+          palettes.aleatoria = Array.from({length:3}, ()=> '#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0'));
+          setPalette(palettes.aleatoria);
+        } else {
+          setPalette(palettes[key]);
+        }
+      });
+    });
+
+    document.getElementById('limpiar-colores').addEventListener('click', ()=>{
+      baseColor = '#ff5e5e';
+      color2 = '#5e7dff';
+      drawColorDemo();
+      document.getElementById('color-info').textContent = 'Paleta restablecida a valores por defecto.';
+    });
+
+    document.getElementById('guardar-colores').addEventListener('click', ()=>{
+      const p = [baseColor, color2];
+      const s = JSON.stringify(p);
+      localStorage.setItem('camparte-paleta', s);
+      document.getElementById('color-info').textContent = 'Paleta guardada localmente para este navegador.';
+    });
+
+    const saved = localStorage.getItem('camparte-paleta');
+    if(saved){
+      try{
+        const arr = JSON.parse(saved);
+        if(arr.length>=2){
+          baseColor = arr<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[0]</a>; color2 = arr<a href="" class="citation-link" target="_blank" style="vertical-align: super; font-size: 0.8em; margin-left: 3px;">[1]</a>;
+          drawColorDemo();
+        }
+      }catch(e){}
+    }
+
+    // 2) Estilos de artistas (version elemental)
+    const galeria = document.getElementById('galeria-estilos');
+    const estilos = [
+      {name:'Van Gogh (Girasoles)', tag:'Van Gogh', color:'#f6d365', description:'Pinceladas grandes y colores cálidos.'},
+      {name:'Frida Kahlo', tag:'Frida Kahlo', color:'#f36', description:'Autoexpresión y símbolos personales simples.'},
+      {name:'Picasso (Cubismo)', tag:'Picasso', color:'#7bd3ff', description:'Formas descompuestas y colores contrastados.'}
+    ];
+    estilos.forEach(e=>{
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.background = 'linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01))';
+      card.style.border = '1px solid rgba(255,255,255,.08)';
+      card.innerHTML = `
+        <div class="title" style="display:flex; align-items:center; gap:8px;">
+          <span style="width:12px;height:12px;border-radius:50%; background:${e.color}; display:inline-block"></span>
+          ${e.name}
+        </div>
+        <div class="excerpt">${e.description}</div>
+        <button class="btn" data-style="${e.tag}">Probar estilo</button>
+      `;
+      galeria.appendChild(card);
+      card.querySelector('button').addEventListener('click', ()=>{
+        applyStyle(e.tag);
+      });
+    });
+
+    function applyStyle(tag){
+      const s = {
+        'Van Gogh': ['#f6d365','#fda085','#f2a97e'],
+        'Frida Kahlo': ['#ffd3b6','#f1a0a0','#8e5a3a'],
+        'Picasso': ['#7bd3ff','#a389ff','#ffd4a3']
+      }[tag] || ['#fff','#aaa','#000'];
+      setPalette(s);
+      document.getElementById('color-info').textContent = `Estilo aplicado: ${tag}. Observa la paleta y la composición similar.`;
+    }
+
+    // 3) Autorretrato (lienzo simple)
+    const aCanvas = document.getElementById('autoCanvas');
+    const aCtx = aCanvas.getContext('2d');
+    function clearAutoCanvas(){
+      aCtx.clearRect(0,0,aCanvas.width,aCanvas.height);
+      aCtx.fillStyle = '#f5f0e6';
+      aCtx.fillRect(0,0,aCanvas.width,aCanvas.height);
+    }
+    clearAutoCanvas();
+
+    let aBrush = 8;
+    const autoBrush = document.getElementById('autoBrush');
+    autoBrush.addEventListener('input', ()=> aBrush = autoBrush.valueAsNumber);
+
+    let drawing = false;
+    function startAuto(e){
+      drawing = true;
+      drawAuto(e);
+    }
+    function moveAuto(e){
+      if(drawing) drawAuto(e);
+    }
+    function endAuto(){ drawing = false; }
+    function drawAuto(e){
+      const rect = aCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      aCtx.fillStyle = document.getElementById('skinColor').value;
+      aCtx.beginPath();
+      aCtx.arc(x, y, aBrush, 0, Math.PI*2);
+      aCtx.fill();
+      aCtx.fillStyle = '#000';
+      aCtx.beginPath(); aCtx.arc(x-6, y-6, 2,0,Math.PI*2); aCtx.fill();
+      aCtx.beginPath(); aCtx.arc(x+6, y-6, 2,0,Math.PI*2); aCtx.fill();
+    }
+    aCanvas.addEventListener('mousedown', startAuto);
+    aCanvas.addEventListener('mousemove', moveAuto);
+    window.addEventListener('mouseup', endAuto);
+
+    function drawHair(){
+      const w = aCanvas.width, h = aCanvas.height;
+      aCtx.fillStyle = document.getElementById('hairColor').value;
+      aCtx.fillRect(w/2 - 60, 0, 120, 60);
+    }
+    drawHair();
+
+    document.getElementById('borrar-autorretrato').addEventListener('click', ()=>{
+      clearAutoCanvas();
+      drawHair();
+      document.getElementById('reto-feedback').textContent = '';
+    });
+
+    // 4) Mini reto final
+    const retoFeedback = document.getElementById('reto-feedback');
+    document.querySelectorAll('[data-action="start-reto"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const type = btn.dataset.type;
+        retoFeedback.textContent = 'Reto iniciado: crea una pequeña obra y escribe 1–2 frases positivas sobre tu creación.';
+        if(type==='palette-emotion'){
+          retoFeedback.textContent = 'Desafío: usa una paleta que exprese una emoción (alegría, calma, energía).';
+        } else if(type==='mix-styles'){
+          retoFeedback.textContent = 'Desafío: mezcla dos estilos en una escena sencilla.';
+        } else if(type==='portrait-background'){
+          retoFeedback.textContent = 'Desafío: autorretrato con un fondo creativo inspirado en Kahlo o Van Gogh.';
+        }
+      });
+    });
+
+    // Transiciones suaves (muy básicas)
+    function smoothDisplay(el){
+      el.style.opacity = 0;
+      el.style.display = 'block';
+      let t = 0;
+      const ttl = 180;
+      const id = setInterval(()=>{
+        t += 16;
+        el.style.opacity = Math.min(1, t/ttl);
+        if(t>=ttl){ clearInterval(id); }
+      },16);
+    }
+
+    // Inicializa
+    showSection('bienvenida');
+
+    // Cargar imágenes de estilo (dibujadas en canvas para mantener todo en local)
+    function drawVanGoghStyle(ctx, w, h){
+      ctx.fillStyle = '#ffd34f';
+      ctx.fillRect(0,0,w,h);
+      for(let i=0;i<300;i++){
+        ctx.fillStyle = i%3? '#f6d365':'#fda085';
+        ctx.fillRect((Math.random()*w)|0, (Math.random()*h)|0, 3, 3);
+      }
+    }
+    function drawFrida(ctx, w, h){
+      ctx.fillStyle = '#ffd4d4';
+      ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = '#b24';
+      for(let i=0;i<60;i++){
+        ctx.beginPath();
+        ctx.arc(Math.random()*w, Math.random()*h, 2, 0, Math.PI*2);
+        ctx.fill();
+      }
+      // símbolo simple
+      ctx.fillStyle = '#d14';
+      ctx.fillRect(w*0.4, h*0.3, w*0.2, h*0.5);
+    }
+    function drawPicasso(ctx, w, h){
+      ctx.fillStyle = '#e7f0ff';
+      ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle = '#0a0';
+      for(let i=0;i<40;i++){
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(Math.random()*w, Math.random()*h);
+        ctx.lineTo(Math.random()*w, Math.random()*h);
+        ctx.stroke();
+      }
+    }
+
+    // dibujar ejemplos simples en los canvases de artista
+    const vg = document.getElementById('vangogh-canvas');
+    const vh = vg.getContext('2d');
+    drawVanGoghStyle(vh, vg.width, vg.height);
+
+    const fr = document.getElementById('frida-canvas');
+    const fh = fr.getContext('2d');
+    drawFrida(fh, fr.width, fr.height);
+
+    const pi = document.getElementById('picasso-canvas');
+    const ph = pi.getContext('2d');
+    drawPicasso(ph, pi.width, pi.height);
+  </script>
+</body>
+</html>
