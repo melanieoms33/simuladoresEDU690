@@ -1,0 +1,334 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{padding:1.5rem 0;font-family:var(--font-sans);}
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.tab-btn{padding:8px 18px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:13px;font-family:var(--font-sans);transition:all 0.2s;}
+.tab-btn.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent;}
+.section{display:none;}
+.section.visible{display:block;}
+h2{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;}
+.subtitle{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem;}
+.label{font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;display:block;}
+.swatch{flex:1;height:28px;border-radius:6px;}
+.harmony-info{font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.5;}
+.artist-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;}
+.artist-card{border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden;cursor:pointer;transition:transform 0.15s,border-color 0.15s;background:var(--color-background-primary);}
+.artist-card:hover{transform:translateY(-2px);border-color:var(--color-border-primary);}
+.artist-card.selected{border-width:1.5px;border-color:var(--color-text-primary);}
+.artist-svg-wrap{width:100%;display:flex;align-items:center;justify-content:center;padding:8px 4px 4px;}
+.artist-name{padding:4px 8px 2px;font-size:12px;font-weight:500;color:var(--color-text-primary);text-align:center;}
+.artist-years{padding:0 8px 8px;font-size:10px;color:var(--color-text-secondary);text-align:center;}
+.artist-detail{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.25rem;margin-top:1rem;}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;margin-right:6px;margin-bottom:8px;}
+.artist-bio{font-size:13px;color:var(--color-text-secondary);line-height:1.7;}
+.info-btn{padding:8px 16px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;font-size:12px;font-family:var(--font-sans);margin-top:10px;}
+.info-btn:hover{background:var(--color-background-primary);}
+.detail-svg-wrap{width:100%;display:flex;justify-content:center;margin-bottom:12px;}
+.theory-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:1rem;}
+.theory-card{border-radius:var(--border-radius-md);padding:12px;cursor:pointer;transition:transform 0.15s;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);}
+.theory-card:hover{transform:scale(1.03);}
+.comp-btn{padding:8px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:12px;font-family:var(--font-sans);margin:4px;}
+.comp-btn.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent;}
+</style>
+
+<h2 class="sr-only">Simulador interactivo de teoría del color, grandes maestros con caricaturas y composición visual</h2>
+<div class="app">
+  <div style="margin-bottom:1.5rem;">
+    <h2>🎨 Estudio de Arte Interactivo</h2>
+    <p class="subtitle">Explora la teoría del color, los grandes maestros y los principios de composición visual</p>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('colores')">Mezcla de colores</button>
+    <button class="tab-btn" onclick="showTab('armonias')">Armonías cromáticas</button>
+    <button class="tab-btn" onclick="showTab('artistas')">Grandes maestros</button>
+    <button class="tab-btn" onclick="showTab('composicion')">Composición visual</button>
+  </div>
+
+  <!-- COLORES -->
+  <div class="section visible" id="tab-colores">
+    <div class="card">
+      <p class="label">Elige dos colores y observa cómo se mezclan (mezcla aditiva de luz)</p>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <div style="text-align:center;max-width:110px;">
+          <div id="circle1" style="width:70px;height:70px;border-radius:50%;border:0.5px solid var(--color-border-tertiary);margin:0 auto 8px;transition:background 0.3s;"></div>
+          <p style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;">Color A</p>
+          <input type="color" id="c1" value="#FF3B3B" oninput="updateMix()">
+        </div>
+        <div style="font-size:24px;color:var(--color-text-tertiary);align-self:center;padding-top:20px;">+</div>
+        <div style="text-align:center;max-width:110px;">
+          <div id="circle2" style="width:70px;height:70px;border-radius:50%;border:0.5px solid var(--color-border-tertiary);margin:0 auto 8px;transition:background 0.3s;"></div>
+          <p style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;">Color B</p>
+          <input type="color" id="c2" value="#3B8FFF" oninput="updateMix()">
+        </div>
+        <div style="font-size:20px;color:var(--color-text-tertiary);align-self:center;padding-top:20px;">→</div>
+        <div style="text-align:center;max-width:120px;">
+          <div id="circleResult" style="width:90px;height:90px;border-radius:50%;border:0.5px solid var(--color-border-secondary);margin:0 auto 6px;transition:background 0.3s;"></div>
+          <p id="resultName" style="font-size:12px;color:var(--color-text-secondary);">Mezcla</p>
+          <p id="resultHex" style="font-size:11px;color:var(--color-text-tertiary);">#000</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="label">Proporción de mezcla</p>
+      <input type="range" id="mixRatio" min="0" max="100" value="50" oninput="updateMix();document.getElementById('ratioLabel').textContent=this.value+'% A / '+(100-this.value)+'% B'" style="width:100%;">
+      <p style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;" id="ratioLabel">50% A / 50% B</p>
+    </div>
+    <div class="card">
+      <p class="label">La rueda cromática</p>
+      <canvas id="wheelCanvas" width="240" height="240" style="display:block;margin:0 auto;border-radius:50%;"></canvas>
+    </div>
+  </div>
+
+  <!-- ARMONÍAS -->
+  <div class="section" id="tab-armonias">
+    <div class="card">
+      <p class="label">Selecciona un color base</p>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <input type="color" id="baseColor" value="#E63946" oninput="updateHarmonies()" style="width:56px;height:44px;border-radius:10px;">
+        <span style="font-size:13px;color:var(--color-text-secondary);">Elige el color raíz de la armonía</span>
+      </div>
+    </div>
+    <div class="theory-grid" id="harmonyGrid"></div>
+  </div>
+
+  <!-- ARTISTAS -->
+  <div class="section" id="tab-artistas">
+    <p class="subtitle">Toca un artista para explorar su mundo</p>
+    <div class="artist-grid" id="artistGrid"></div>
+    <div class="artist-detail" id="artistDetail" style="display:none;"></div>
+  </div>
+
+  <!-- COMPOSICIÓN -->
+  <div class="section" id="tab-composicion">
+    <div class="card">
+      <p class="label">Activa o desactiva guías de composición</p>
+      <div>
+        <button class="comp-btn active" id="btn-tercios" onclick="toggleGuide('tercios')">Regla de tercios</button>
+        <button class="comp-btn" id="btn-aurea" onclick="toggleGuide('aurea')">Sección áurea</button>
+        <button class="comp-btn" id="btn-diagonal" onclick="toggleGuide('diagonal')">Diagonales</button>
+        <button class="comp-btn" id="btn-simetria" onclick="toggleGuide('simetria')">Simetría central</button>
+      </div>
+    </div>
+    <div style="border-radius:var(--border-radius-md);overflow:hidden;border:0.5px solid var(--color-border-tertiary);">
+      <canvas id="compCanvas" width="640" height="360" style="width:100%;height:auto;display:block;"></canvas>
+    </div>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.6;" id="compInfo">La <strong>regla de tercios</strong> divide el encuadre en 9 partes iguales. Coloca los elementos importantes en las intersecciones para una composición equilibrada y dinámica.</p>
+  </div>
+</div>
+
+<script>
+const tabs=['colores','armonias','artistas','composicion'];
+function showTab(t){
+  tabs.forEach(x=>{document.getElementById('tab-'+x).classList.toggle('visible',x===t);});
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',tabs[i]===t));
+  if(t==='colores'){updateMix();drawWheel();}
+  if(t==='armonias')updateHarmonies();
+  if(t==='composicion')drawComp();
+}
+function hexToRgb(h){const r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);return r?[parseInt(r[1],16),parseInt(r[2],16),parseInt(r[3],16)]:[0,0,0];}
+function rgbToHex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
+function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h,s,l=(mx+mn)/2;if(mx===mn){h=s=0;}else{const d=mx-mn;s=l>0.5?d/(2-mx-mn):d/(mx+mn);switch(mx){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6;}return[h*360,s*100,l*100];}
+function hslToRgb(h,s,l){h/=360;s/=100;l/=100;let r,g,b;if(s===0){r=g=b=l;}else{const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q,h2r=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};r=h2r(p,q,h+1/3);g=h2r(p,q,h);b=h2r(p,q,h-1/3);}return[Math.round(r*255),Math.round(g*255),Math.round(b*255)];}
+function colorName(r,g,b){const[h,s,l]=rgbToHsl(r,g,b);if(s<10)return l<20?'Negro':l>80?'Blanco':'Gris';const hn=[[0,'Rojo'],[30,'Naranja'],[60,'Amarillo'],[90,'Amarillo-verde'],[150,'Verde'],[180,'Cian'],[210,'Azul-cian'],[240,'Azul'],[270,'Índigo'],[300,'Violeta'],[330,'Magenta'],[360,'Rojo']];let n=hn[0][1];for(let i=0;i<hn.length-1;i++){if(h>=hn[i][0]&&h<hn[i+1][0]){n=hn[i][1];break;}}return(l>70?'Claro ':'')+(l<30?'Oscuro ':'')+n;}
+function updateMix(){const c1=hexToRgb(document.getElementById('c1').value),c2=hexToRgb(document.getElementById('c2').value),r=document.getElementById('mixRatio').value/100;document.getElementById('circle1').style.background=rgbToHex(...c1);document.getElementById('circle2').style.background=rgbToHex(...c2);const m=[c1[0]*r+c2[0]*(1-r),c1[1]*r+c2[1]*(1-r),c1[2]*r+c2[2]*(1-r)];const hex=rgbToHex(...m);document.getElementById('circleResult').style.background=hex;document.getElementById('resultName').textContent=colorName(...m.map(Math.round));document.getElementById('resultHex').textContent=hex.toUpperCase();}
+function drawWheel(){const cv=document.getElementById('wheelCanvas'),ctx=cv.getContext('2d'),cx=cv.width/2,cy=cv.height/2,rad=cx-4;for(let a=0;a<360;a++){const g=ctx.createRadialGradient(cx,cy,0,cx,cy,rad);g.addColorStop(0,'white');g.addColorStop(1,`hsl(${a},100%,50%)`);ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,rad,(a-1)*Math.PI/180,(a+1)*Math.PI/180);ctx.closePath();ctx.fillStyle=g;ctx.fill();}}
+
+const harmonies=[
+  {name:'Complementarios',desc:'Colores opuestos. Máximo contraste y vibración visual.',fn:h=>[h,(h+180)%360]},
+  {name:'Análogos',desc:'Colores vecinos. Armonía, calma y unidad natural.',fn:h=>[h,(h+30)%360,(h+60)%360]},
+  {name:'Tríada',desc:'Tres colores equidistantes. Equilibrio vibrante y variado.',fn:h=>[h,(h+120)%360,(h+240)%360]},
+  {name:'Tetráada',desc:'Cuatro colores. Composición rica y compleja.',fn:h=>[h,(h+90)%360,(h+180)%360,(h+270)%360]},
+  {name:'Dividido',desc:'Un color + dos vecinos de su complementario.',fn:h=>[h,(h+150)%360,(h+210)%360]},
+  {name:'Monocromático',desc:'Un matiz en distintas luminosidades.',fn:h=>[h,h,h,h],sats:[100,70,40,20],lights:[50,60,70,80]}
+];
+function updateHarmonies(){const base=document.getElementById('baseColor').value,[h,s,l]=rgbToHsl(...hexToRgb(base)),grid=document.getElementById('harmonyGrid');grid.innerHTML='';harmonies.forEach(harm=>{const hues=harm.fn(h),card=document.createElement('div');card.className='theory-card';const t=document.createElement('div');t.style.cssText='font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;';t.textContent=harm.name;card.appendChild(t);const row=document.createElement('div');row.style.cssText='display:flex;gap:4px;';hues.forEach((hue,i)=>{const sw=document.createElement('div');sw.style.cssText=`flex:1;height:28px;border-radius:6px;background:${rgbToHex(...hslToRgb(hue,harm.sats?harm.sats[i]:s,harm.lights?harm.lights[i]:Math.min(65,Math.max(35,l))))};`;row.appendChild(sw);});card.appendChild(row);const d=document.createElement('p');d.className='harmony-info';d.textContent=harm.desc;card.appendChild(d);grid.appendChild(card);});}
+
+// ── CARICATURAS SVG DE ARTISTAS ──────────────────────────────────────────
+const artistSVGs = {
+monet: `<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" width="100" height="116">
+  <ellipse cx="60" cy="90" rx="38" ry="28" fill="#6B8E5A"/>
+  <ellipse cx="60" cy="65" rx="30" ry="35" fill="#F5C89A"/>
+  <ellipse cx="60" cy="50" rx="32" ry="22" fill="#8B6F47"/>
+  <rect x="28" y="44" width="64" height="12" rx="6" fill="#5C3D1E"/>
+  <ellipse cx="60" cy="45" rx="34" ry="8" fill="#3D2B0F"/>
+  <circle cx="48" cy="68" r="4.5" fill="white"/>
+  <circle cx="72" cy="68" r="4.5" fill="white"/>
+  <circle cx="49" cy="69" r="2.5" fill="#3B2A1A"/>
+  <circle cx="73" cy="69" r="2.5" fill="#3B2A1A"/>
+  <ellipse cx="60" cy="77" rx="6" ry="4" fill="#E09070"/>
+  <path d="M50 87 Q60 93 70 87" fill="none" stroke="#C07050" stroke-width="2" stroke-linecap="round"/>
+  <rect x="44" y="60" width="8" height="13" rx="3" fill="#D4956A"/>
+  <rect x="68" y="60" width="8" height="13" rx="3" fill="#D4956A"/>
+  <path d="M30 85 Q20 95 22 115 Q40 125 60 126 Q80 125 98 115 Q100 95 90 85" fill="#6B8E5A"/>
+  <ellipse cx="44" cy="64" rx="9" ry="3.5" fill="#8B6F47"/>
+  <ellipse cx="76" cy="64" rx="9" ry="3.5" fill="#8B6F47"/>
+  <path d="M48 56 Q60 52 72 56" fill="none" stroke="#5C3D1E" stroke-width="1.5" stroke-linecap="round"/>
+  <ellipse cx="35" cy="100" rx="6" ry="12" fill="#87CEAA"/>
+  <ellipse cx="85" cy="100" rx="6" ry="12" fill="#87CEAA"/>
+  <circle cx="52" cy="68" r="1" fill="white"/>
+  <circle cx="76" cy="68" r="1" fill="white"/>
+  <path d="M38 62 Q44 57 50 62" fill="none" stroke="#3D2B0F" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M70 62 Q76 57 82 62" fill="none" stroke="#3D2B0F" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`,
+
+vangogh: `<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" width="100" height="116">
+  <ellipse cx="60" cy="90" rx="38" ry="28" fill="#4A6FA5"/>
+  <ellipse cx="60" cy="68" rx="28" ry="33" fill="#F5C890"/>
+  <rect x="28" y="40" width="64" height="32" rx="8" fill="#4A6FA5"/>
+  <ellipse cx="60" cy="42" rx="32" ry="10" fill="#3A5F95"/>
+  <path d="M28 42 Q60 25 92 42" fill="#3A5F95"/>
+  <circle cx="47" cy="70" r="5" fill="white"/>
+  <circle cx="73" cy="70" r="5" fill="white"/>
+  <circle cx="48" cy="71" r="3" fill="#2E4A7A"/>
+  <circle cx="74" cy="71" r="3" fill="#2E4A7A"/>
+  <circle cx="49" cy="70" r="1" fill="white"/>
+  <circle cx="75" cy="70" r="1" fill="white"/>
+  <ellipse cx="60" cy="79" rx="5" ry="4" fill="#E08060"/>
+  <path d="M51 88 Q60 95 69 88" fill="none" stroke="#C06040" stroke-width="2" stroke-linecap="round"/>
+  <path d="M32 60 Q28 55 30 50 Q34 56 38 58" fill="#D4703A" stroke="#B05020" stroke-width="0.5"/>
+  <path d="M30 63 Q26 59 28 54 Q32 60 36 62" fill="#D4703A" stroke="#B05020" stroke-width="0.5"/>
+  <path d="M34 57 Q30 52 33 48 Q36 54 40 56" fill="#C4603A"/>
+  <path d="M30 58 Q85 58 90 58" fill="none" stroke="#E8903A" stroke-width="1" opacity="0.4"/>
+  <path d="M30 92 Q22 100 24 118 Q42 128 60 129 Q78 128 96 118 Q98 100 90 92" fill="#4A6FA5"/>
+  <ellipse cx="46" cy="65" rx="8" ry="3" fill="#D4703A"/>
+  <ellipse cx="74" cy="65" rx="8" ry="3" fill="#D4703A"/>
+  <path d="M42 60 Q46 55 52 59" fill="none" stroke="#3D2000" stroke-width="2" stroke-linecap="round"/>
+  <path d="M68 59 Q74 55 78 60" fill="none" stroke="#3D2000" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="47" cy="70" rx="5" ry="2" fill="none" stroke="#8B6030" stroke-width="0.5"/>
+  <ellipse cx="73" cy="70" rx="5" ry="2" fill="none" stroke="#8B6030" stroke-width="0.5"/>
+</svg>`,
+
+frida: `<svg viewBox="0 0 120 145" xmlns="http://www.w3.org/2000/svg" width="100" height="120">
+  <ellipse cx="60" cy="95" rx="36" ry="26" fill="#C0392B"/>
+  <ellipse cx="60" cy="72" rx="27" ry="32" fill="#D4956A"/>
+  <path d="M33 52 Q38 30 60 28 Q82 30 87 52 Q82 48 60 46 Q38 48 33 52Z" fill="#1a0a00"/>
+  <path d="M36 52 Q60 35 84 52 Q82 45 60 43 Q38 45 36 52Z" fill="#2a1000"/>
+  <circle cx="34" cy="64" r="5" fill="#F5C890"/>
+  <circle cx="86" cy="64" r="5" fill="#F5C890"/>
+  <circle cx="46" cy="70" r="5.5" fill="white"/>
+  <circle cx="74" cy="70" r="5.5" fill="white"/>
+  <circle cx="47" cy="71" r="3" fill="#2C1810"/>
+  <circle cx="75" cy="71" r="3" fill="#2C1810"/>
+  <circle cx="48" cy="70" r="1" fill="white"/>
+  <circle cx="76" cy="70" r="1" fill="white"/>
+  <path d="M38 62 Q60 58 82 62 Q60 56 38 62Z" fill="#1a0a00"/>
+  <ellipse cx="60" cy="63" rx="4" ry="2" fill="#1a0a00"/>
+  <ellipse cx="60" cy="80" rx="5" ry="3.5" fill="#B07050"/>
+  <path d="M50 89 Q60 97 70 89" fill="none" stroke="#8B4030" stroke-width="2" stroke-linecap="round"/>
+  <path d="M43 58 Q44 52 48 51 Q52 50 53 53 Q49 54 46 60" fill="#5a3000"/>
+  <path d="M67 53 Q71 50 75 51 Q79 52 80 58 Q77 54 74 60" fill="#5a3000"/>
+  <path d="M50 44 Q55 30 60 26 Q65 30 70 44" fill="none" stroke="#1a0a00" stroke-width="3"/>
+  <circle cx="52" cy="30" r="4" fill="#27AE60"/>
+  <circle cx="60" cy="26" r="5" fill="#E74C3C"/>
+  <circle cx="68" cy="30" r="4" fill="#F39C12"/>
+  <circle cx="56" cy="24" r="3" fill="#F39C12"/>
+  <circle cx="64" cy="24" r="3" fill="#27AE60"/>
+  <path d="M26 90 Q18 100 20 120 Q38 130 60 131 Q82 130 100 120 Q102 100 94 90" fill="#C0392B"/>
+  <path d="M30 92 Q22 85 26 78" fill="none" stroke="#1a0a00" stroke-width="6" stroke-linecap="round"/>
+  <path d="M90 92 Q98 85 94 78" fill="none" stroke="#1a0a00" stroke-width="6" stroke-linecap="round"/>
+  <path d="M32 105 Q60 118 88 105" fill="none" stroke="#8B0000" stroke-width="3" opacity="0.5"/>
+</svg>`,
+
+picasso: `<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" width="100" height="116">
+  <ellipse cx="60" cy="88" rx="36" ry="26" fill="#2C2C2C"/>
+  <ellipse cx="60" cy="68" rx="26" ry="32" fill="#F0C08A"/>
+  <ellipse cx="60" cy="45" rx="30" ry="15" fill="#1A1A1A"/>
+  <ellipse cx="60" cy="40" rx="28" ry="8" fill="#111"/>
+  <circle cx="44" cy="68" r="7" fill="white"/>
+  <circle cx="76" cy="65" r="6" fill="white"/>
+  <circle cx="42" cy="69" r="4" fill="#1A1A1A"/>
+  <circle cx="77" cy="66" r="3" fill="#5C3A8A"/>
+  <circle cx="41" cy="68" r="1.5" fill="white"/>
+  <circle cx="78" cy="65" r="1" fill="white"/>
+  <path d="M44 57 Q48 53 54 57" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M66 55 Q72 51 78 56" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="52,78 68,78 65,84 55,84" fill="#E08060"/>
+  <path d="M50 87 Q60 94 70 87" fill="none" stroke="#C06040" stroke-width="2" stroke-linecap="round"/>
+  <path d="M56 67 Q60 60 64 67 Q60 64 56 67Z" fill="#D4906A"/>
+  <path d="M34 88 Q20 98 22 118 Q40 128 60 129 Q80 128 98 118 Q100 98 86 88" fill="#2C2C2C"/>
+  <line x1="60" y1="55" x2="60" y2="90" stroke="#C0A080" stroke-width="0.8" opacity="0.4"/>
+  <line x1="40" y1="70" x2="80" y2="70" stroke="#C0A080" stroke-width="0.8" opacity="0.4"/>
+  <ellipse cx="44" cy="63" rx="7" ry="2.5" fill="#C4903A"/>
+  <ellipse cx="76" cy="60" rx="6" ry="2" fill="#C4903A"/>
+  <ellipse cx="60" cy="80" rx="5" ry="3" fill="#E08060"/>
+</svg>`,
+
+manet: `<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" width="100" height="116">
+  <ellipse cx="60" cy="90" rx="36" ry="26" fill="#1A1A2E"/>
+  <ellipse cx="60" cy="68" rx="27" ry="33" fill="#F0C898"/>
+  <rect x="26" y="35" width="68" height="28" rx="5" fill="#111118"/>
+  <ellipse cx="60" cy="37" rx="34" ry="10" fill="#0A0A14"/>
+  <path d="M26 37 Q60 18 94 37 Q60 28 26 37Z" fill="#1A1A2E"/>
+  <circle cx="47" cy="69" r="5.5" fill="white"/>
+  <circle cx="73" cy="69" r="5.5" fill="white"/>
+  <circle cx="48" cy="70" r="3" fill="#1A1A2E"/>
+  <circle cx="74" cy="70" r="3" fill="#1A1A2E"/>
+  <circle cx="49" cy="69" r="1" fill="white"/>
+  <circle cx="75" cy="69" r="1" fill="white"/>
+  <path d="M42 62 Q47 57 53 62" fill="none" stroke="#1A1A2E" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M67 62 Q73 57 78 62" fill="none" stroke="#1A1A2E" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="60" cy="78" rx="5" ry="3.5" fill="#D4906A"/>
+  <path d="M51 87 Q60 95 69 87" fill="none" stroke="#B06040" stroke-width="2" stroke-linecap="round"/>
+  <path d="M34 62 Q30 57 32 50 Q35 56 38 60 L36 65Z" fill="#8B6A40"/>
+  <path d="M30 66 Q26 61 28 54 Q31 60 34 64 L32 69Z" fill="#7A5A30"/>
+  <path d="M35 58 Q31 53 33 47 Q36 53 40 57" fill="#9B7A50"/>
+  <path d="M34 90 Q20 100 22 118 Q40 128 60 129 Q80 128 98 118 Q100 100 86 90" fill="#1A1A2E"/>
+  <rect x="54" y="55" width="12" height="18" rx="2" fill="#D4906A" opacity="0.6"/>
+  <ellipse cx="46" cy="64" rx="8" ry="2.5" fill="#8B6A40"/>
+  <ellipse cx="74" cy="64" rx="8" ry="2.5" fill="#8B6A40"/>
+</svg>`
+};
+
+const artists=[
+  {name:'Claude Monet',years:'1840–1926',svgKey:'monet',bg:'#d4f0e8',movement:'Impresionismo',movBg:'#d4f0e8',movColor:'#0f5e44',palette:['#87CEEB','#90EE90','#FFD700','#FF9966','#E0F8FF'],bio:'Padre del impresionismo francés. Obsesionado con la luz y el instante, pintó series del mismo motivo para capturar cómo cambia la luz a cada hora. Sus Nenúfares son una de las cumbres del arte occidental.',obra:'Nenúfares, Impresión: sol naciente, La catedral de Rouen',wiki:'https://es.wikipedia.org/wiki/Claude_Monet'},
+  {name:'Vincent van Gogh',years:'1853–1890',svgKey:'vangogh',bg:'#fffbe0',movement:'Postimpresionismo',movBg:'#fffbe0',movColor:'#7a5a00',palette:['#F5D56E','#4A7FC1','#8B6914','#2E4A7A','#E8903A'],bio:'Pintó más de 900 obras en apenas una década. Sus pinceladas espirales y uso emocional del color amarillo y azul lo convirtieron en el arquetipo del artista genial incomprendido. Sus obras son hoy las más valiosas del mundo.',obra:'La noche estrellada, Los girasoles, El cuarto en Arlés',wiki:'https://es.wikipedia.org/wiki/Vincent_van_Gogh'},
+  {name:'Frida Kahlo',years:'1907–1954',svgKey:'frida',bg:'#fff0e4',movement:'Surrealismo / Arte popular',movBg:'#fff0e4',movColor:'#8a3a00',palette:['#C0392B','#F39C12','#27AE60','#8E44AD','#2C3E50'],bio:'Pintora mexicana que transformó su dolor en arte universal. Sus autorretratos son exploraciones profundas de identidad, género y cuerpo. Sus colores brillantes y simbolismo prehispánico la hacen única en la historia del arte.',obra:'Las dos Fridas, La columna rota, Autorretrato con mono',wiki:'https://es.wikipedia.org/wiki/Frida_Kahlo'},
+  {name:'Pablo Picasso',years:'1881–1973',svgKey:'picasso',bg:'#ede8f5',movement:'Cubismo',movBg:'#ede8f5',movColor:'#3c2a8a',palette:['#8B8B8B','#C8A97A','#4A4A4A','#D4A85C','#2C2C2C'],bio:'Co-inventor del cubismo. Revolucionó la representación al mostrar múltiples perspectivas simultáneas. Su Guernica es la obra de arte político más poderosa del siglo XX.',obra:'Las señoritas de Aviñón, Guernica, Mujer llorando',wiki:'https://es.wikipedia.org/wiki/Pablo_Picasso'},
+  {name:'Édouard Manet',years:'1832–1883',svgKey:'manet',bg:'#e8f0fa',movement:'Realismo / Proto-impresionismo',movBg:'#e8f0fa',movColor:'#14366b',palette:['#1A1A2E','#F8F0E3','#C8B89A','#4A6741','#8B2020'],bio:'El puente entre el arte académico y la modernidad. Su "Almuerzo sobre la hierba" escandalizó París. Revolucionó la pintura al renunciar a la perspectiva clásica y ser mentor del grupo impresionista.',obra:'Almuerzo sobre la hierba, Olimpia, El bar del Folies-Bergère',wiki:'https://es.wikipedia.org/wiki/%C3%89douard_Manet'}
+];
+
+function buildArtistGrid(){
+  const grid=document.getElementById('artistGrid');
+  artists.forEach((a,i)=>{
+    const card=document.createElement('div');
+    card.className='artist-card';
+    card.id='acard-'+i;
+    card.onclick=()=>showArtist(i);
+    card.innerHTML=`<div class="artist-svg-wrap" style="background:${a.bg}">${artistSVGs[a.svgKey]}</div><div class="artist-name">${a.name.split(' ').pop()}</div><div class="artist-years">${a.years}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+function showArtist(i){
+  document.querySelectorAll('.artist-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('acard-'+i).classList.add('selected');
+  const a=artists[i];
+  const det=document.getElementById('artistDetail');
+  det.style.display='block';
+  const swatches=a.palette.map(c=>`<div style="width:26px;height:26px;border-radius:5px;background:${c};border:0.5px solid rgba(0,0,0,0.1);display:inline-block;margin-right:4px;"></div>`).join('');
+  det.innerHTML=`
+    <div class="detail-svg-wrap" style="background:${a.bg};border-radius:var(--border-radius-lg);padding:16px;">${artistSVGs[a.svgKey].replace('width="100"','width="140"').replace('height="116"','height="162"').replace('height="120"','height="168"')}</div>
+    <h3 style="font-size:16px;font-weight:500;margin-bottom:4px;">${a.name}</h3>
+    <span class="badge" style="background:${a.movBg};color:${a.movColor}">${a.movement}</span>
+    <p class="artist-bio">${a.bio}</p>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-top:10px;"><strong>Obras destacadas:</strong> ${a.obra}</p>
+    <div style="margin-top:10px;"><span class="label">Paleta característica</span>${swatches}</div>
+    <br><button class="info-btn" onclick="openLink('${a.wiki}')">Ver más en Wikipedia ↗</button>
+  `;
+  det.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+const guides={tercios:true,aurea:false,diagonal:false,simetria:false};
+const guideInfo={tercios:'La <strong>regla de tercios</strong> divide el encuadre en 9 partes iguales. Coloca los elementos importantes en las intersecciones para una composición equilibrada y dinámica.',aurea:'La <strong>sección áurea</strong> (φ ≈ 1.618) es la proporción más armoniosa encontrada en la naturaleza. Botticelli, Da Vinci y Dalí la usaron conscientemente.',diagonal:'Las <strong>diagonales</strong> crean movimiento y tensión visual. Las líneas que convergen guían la mirada hacia el centro de interés.',simetria:'La <strong>simetría central</strong> crea equilibrio y solemnidad. Wes Anderson y Kubrick la usan para transmitir control o inquietud.'};
+function toggleGuide(k){guides[k]=!guides[k];document.getElementById('btn-'+k).classList.toggle('active',guides[k]);drawComp();const active=Object.keys(guides).filter(x=>guides[x]);document.getElementById('compInfo').innerHTML=active.length?guideInfo[active[active.length-1]]:'Activa una guía para ver su descripción.';}
+
+function drawComp(){const cv=document.getElementById('compCanvas');if(!cv)return;const ctx=cv.getContext('2d'),w=cv.width,h=cv.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#e8dfc8';ctx.fillRect(0,0,w,h);const grd=ctx.createLinearGradient(0,0,0,h*0.6);grd.addColorStop(0,'#a8cce8');grd.addColorStop(1,'#d4e8c0');ctx.fillStyle=grd;ctx.fillRect(0,0,w,h*0.65);ctx.fillStyle='#5a8844';ctx.fillRect(0,h*0.65,w,h*0.35);ctx.fillStyle='#4a7834';ctx.beginPath();ctx.ellipse(w*0.2,h*0.65,38,80,0,0,2*Math.PI);ctx.fill();ctx.fillStyle='#3a6824';ctx.beginPath();ctx.ellipse(w*0.78,h*0.65,28,60,0,0,2*Math.PI);ctx.fill();const sg=ctx.createRadialGradient(w*0.5,h*0.2,5,w*0.5,h*0.2,48);sg.addColorStop(0,'#FFF176');sg.addColorStop(0.4,'#FFD54F');sg.addColorStop(1,'rgba(255,180,0,0)');ctx.fillStyle=sg;ctx.beginPath();ctx.arc(w*0.5,h*0.2,48,0,2*Math.PI);ctx.fill();if(guides.tercios){ctx.strokeStyle='rgba(255,255,255,0.75)';ctx.lineWidth=1;ctx.setLineDash([5,5]);[w/3,2*w/3].forEach(x=>{ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();});[h/3,2*h/3].forEach(y=>{ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();});ctx.setLineDash([]);[[w/3,h/3],[2*w/3,h/3],[w/3,2*h/3],[2*w/3,2*h/3]].forEach(pt=>{ctx.beginPath();ctx.arc(pt[0],pt[1],7,0,2*Math.PI);ctx.fillStyle='rgba(255,230,50,0.9)';ctx.fill();});}if(guides.aurea){const phi=1.618,gw=w/phi,gh=h/phi;ctx.strokeStyle='rgba(80,200,255,0.8)';ctx.lineWidth=1.5;ctx.setLineDash([7,4]);ctx.beginPath();ctx.rect((w-gw)/2,(h-gh)/2,gw,gh);ctx.stroke();ctx.setLineDash([]);}if(guides.diagonal){ctx.strokeStyle='rgba(255,80,180,0.7)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);[[0,0,w,h],[w,0,0,h],[0,h/2,w,h/2],[w/2,0,w/2,h]].forEach(l=>{ctx.beginPath();ctx.moveTo(l[0],l[1]);ctx.lineTo(l[2],l[3]);ctx.stroke();});ctx.setLineDash([]);}if(guides.simetria){ctx.strokeStyle='rgba(160,80,255,0.7)';ctx.lineWidth=1.5;for(let r=40;r<w/2;r+=55){ctx.beginPath();ctx.arc(w/2,h/2,r,0,2*Math.PI);ctx.stroke();}ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.stroke();}}
+
+buildArtistGrid();
+updateMix();
+drawWheel();
+updateHarmonies();
+drawComp();
+</script>
